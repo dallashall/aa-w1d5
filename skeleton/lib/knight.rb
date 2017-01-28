@@ -6,13 +6,21 @@ class KnightPathFinder
   def initialize(start_pos == [0,0])
     @start_pos = start_pos
     @visited_positions = [@start_pos]
+    @tree_hash = {}
   end
+
+  # def new_move_positions(pos)
+  #   moves = KnightPathFinder.valid_moves(pos).reject do |move|
+  #     @visited_positions.include?(move)
+  #   end
+  #   @visited_positions += moves
+  #   moves
+  # end
 
   def new_move_positions(pos)
     moves = KnightPathFinder.valid_moves(pos).reject do |move|
       @visited_positions.include?(move)
     end
-    @visited_positions += moves
     moves
   end
 
@@ -24,12 +32,22 @@ class KnightPathFinder
   end
 
   def build_move_tree
-    # cur_node = PolyTreeNode(@start_pos)
-    # move_tree = [cur_node]
-    #
-    # until cur_node ==
+    q = [PolyTreeNode.new(@start_pos)]
+    q.each do |pos_node|
+      new_move_positions(pos_node.value).each do |possible_pos|
+        pos_node.add_child(PolyTreeNode.new(possible_pos))
+      end
 
+      @visited_positions << pos
+      @tree_hash[pos.value.to_s] = trace_back(q.shift)
+    end
   end
 
-
+  def trace_back(pos_node)
+    path = []
+    until pos_node.parent.nil?
+      path.unshift(pos_node.parent.value)
+      pos_node = pos_node.parent
+    end
+    pos_node
 end
